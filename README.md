@@ -13,4 +13,4 @@ The execution folder contains the bot itself that manages trades according to th
 
 In order to run this bot in your local host, first create a Stat Bot parent folder and inside it two folders: 
 - a Program folder containing the Strategy and Execution folders, along with a .env file with your Kraken Futures and/or Demo API keys,
-- a Data folder containing the strategy data i.e. historical_prices.json, instruments.json and a Pairs folder containing the Z-score series of the best pairs to trade at the moment of running the strategy.
+- a Data folder containing the strategy data i.e. historical_prices.json, instruments.json and a Pairs folder containing the Z-score series of the latest best pairs to trade.
