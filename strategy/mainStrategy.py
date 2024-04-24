@@ -7,7 +7,8 @@ from config_strategy import config
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-# get_historical_prices(config)
+
+get_historical_prices(config)
 
 with open("../../Data/historical_prices.json") as file:
     price_data = json.load(file)
@@ -17,4 +18,5 @@ coint_pairs = get_coint_pairs(price_data)
 df_pairs = to_dataframe(coint_pairs)
 
 save_for_backtest(df_pairs)
-# plot_trends(df_coint_pairs)
+
+plot_trends(df_coint_pairs)
