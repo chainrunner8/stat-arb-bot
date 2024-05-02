@@ -1,9 +1,10 @@
-from statsmodels.tsa.stattools import coint
-from Strategy.config_strategy import config
+
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import coint
+from configStrategy import config
 
 
 class Pair:
@@ -36,17 +37,21 @@ def get_pair_params(pair):
     # hedge ratio:
     ols = sm.OLS(pair.prices['sym1'], pair.prices['sym2']).fit()
     pair.hedge_ratio = ols.params[0]
+
     # spread:
     pair.spread = list(pd.Series(pair.prices['sym1']) - pd.Series(pair.prices['sym2']) * pair.hedge_ratio)
-    # zero crossings:
-    pair.zero_crossings = len(np.where(np.diff(np.sign(pair.spread)))[0])
+
     # z-scores:
     df_spread = pd.DataFrame(list(pair.spread), columns=["spread"])
-    mean = df_spread.rolling(window=21).mean()
-    std = df_spread.rolling(window=21).std()
-    x = df_spread.rolling(window=1).mean()
-    df_spread["z_score"] = (x - mean) / std
-    pair.z_score = df_spread["z_score"].astype(float).values
+
+    mean = df_spread.rolling(window=config.z_window).mean()
+    std = df_spread.rolling(window=config.z_window).std()
+
+    df_spread["z_score"] = (df_spread - mean) / std
+
+    # zero crossings:
+    pair.z_score = df_spread["z_score"].astype(float).values  # kind of useless line
+    pair.zero_crossings = len(np.nonzero(np.diff(np.sign(pair.z_score)))[0])  # obtained by counting the number of times the Z-score changes sign
 
     return pair
 
@@ -105,7 +110,7 @@ def save_for_backtest(dataframe):
         df_backtest['sym1_prices'] = row.prices['sym1']
         df_backtest['sym2_prices'] = row.prices['sym2']
         df_backtest['spread'] = row.spread
-        df_backtest['z-score'] = row.z_score
+        df_backtest['z_score'] = row.z_score
         sym1 = row.symbol[0].split('PF_')[1]
         sym2 = row.symbol[1].split('PF_')[1]
 
