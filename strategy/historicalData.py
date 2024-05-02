@@ -4,19 +4,24 @@ import datetime as dt
 import time
 
 
-def get_symbols():
-    try:
-        response = requests.get("https://futures.kraken.com/api/charts/v1/spot")
-        symbols = response.json()
-        pf_symbols = [x for x in symbols if x[:2] == 'PF']
-        return pf_symbols
-    except Exception as e:
-        print(f'Failed to fetch symbols:', e)
+def get_tradeable_symbols():
+
+    with open("../../Data/instruments.json") as file:  # all existing instruments that can be traded on Kraken Futures and their details.
+        data = json.load(file)
+
+    symbols = []
+    for inst in data['instruments']:
+        if inst['tradeable']:
+            symbol = inst['symbol']
+            if symbol[:2] == 'PF' and not ('USDC' in symbol or 'USDT' in symbol):  # we only want to trade PF (linear perpetuals) that are currently tradeable excluding USDT/C.
+                symbols.append(inst['symbol'])
+                
+    return symbols
 
 
 def get_historical_prices(config):
     hist_data = {}
-    symbols = get_symbols()
+    symbols = get_tradeable_symbols()
     today = dt.datetime.now() - dt.timedelta(hours=config.lookback)
     params = {'from': int(today.timestamp())}
     counter = 0
