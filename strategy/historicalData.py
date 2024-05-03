@@ -8,16 +8,27 @@ from configStrategy import config
 
 def get_tradeable_symbols():
 
-    with open("../../Data/instruments.json") as file:  # all existing instruments that can be traded on Kraken Futures and their details.
+    with open("../Data/instruments.json") as file:  # all existing instruments that can be traded on Kraken Futures and their details.
         data = json.load(file)
 
+    # get latest ticker data
+    response = requests.get("https://futures.kraken.com/derivatives/api/v3/tickers")
+    ticker_data = response.json()
+
     symbols = []
+
     for inst in data['instruments']:
         if inst['tradeable']:
             symbol = inst['symbol']
             if symbol[:2] == 'PF' and not ('USDC' in symbol or 'USDT' in symbol):  # we only want to trade PF (linear perpetuals) that are currently tradeable excluding USDT/C.
-                symbols.append(symbol)
-                
+                volume_quote = next(
+                    ticker['volumeQuote']
+                    for ticker in ticker_data['tickers']
+                    if ticker['symbol'] == symbol
+                )
+                if volume_quote >= 1_000_000:  # we only want to trade liquid tickers, <1M USD daily volume = illiquid.
+                    symbols.append(symbol)
+
     return symbols
 
 
@@ -45,7 +56,7 @@ def get_historical_prices():
         else:
             continue
 
-    with open("../../Data/historical_prices.json", 'w') as file:
+    with open("../Data/historical_prices.json", 'w') as file:
         json.dump(hist_data, file, indent=4)
         print('Prices saved.')
 
