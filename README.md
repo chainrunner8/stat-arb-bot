@@ -1,4 +1,4 @@
-(# stat-arb-bot
+# stat-arb-bot
 A statistical arbitrage bot that runs on the Bybit centralised exchange.
 
 All the code for this bot is original and written by myself. I uploaded the initial version in April 2024 which traded on Kraken Futures, but most cryptos were highly illiquid on there, so I had to switch over to Bybit which simulates demo trading orders in a real orderbook. We want to first test our bot with mock money but in a real trading environment, so for that reason Bybit was a much better choice.
