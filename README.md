@@ -1,9 +1,10 @@
-# stat-arb-bot
-A statistical arbitrage bot that runs on the Kraken centralised exchange.
+(# stat-arb-bot
+A statistical arbitrage bot that runs on the Bybit centralised exchange.
 
-Except for the message signing and request sending functions in sessionPrivate.py that were taken from the Kraken API documentation by Crypto Facilities Ltd, all the code for this bot is original and written by myself.
+All the code for this bot is original and written by myself. I uploaded the initial version in April 2024 which traded on Kraken Futures, but most cryptos were highly illiquid on there, so I had to switch over to Bybit which simulates demo trading orders in a real orderbook. We want to first test our bot with mock money but in a real trading environment, so for that reason Bybit was a much better choice.
+I chose not to use the WebSocket() class of the pybit library as it doesn't allow you to unsubscribe from a websocket topic - leaving you with the only option to close the wss connection and reopen it to change topics, which I don't find elegant nor efficient. Therefore I coded my own websocket class that connects to the Bybit websocket api and allows me to unsubscribe from a topic.
 
-This version of the bot is fully functional as of April 2024 but doesn't have any real edge, this is something I'm working on by perfecting the strategy and tuning the execution parameters. Should I find a way to make serious money with this bot, of course I won't upload it on here!
+This version of the bot is fully functional as of August 2024 but doesn't have any real edge, this is something I'm working on by perfecting the strategy and tuning the execution parameters. Should I find a way to make serious money with this bot, of course I won't upload it on here!
 
 The strategy folder contains the modules that:
 - fetch historical price data for all tradeable symbols on Kraken Futures,
